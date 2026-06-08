@@ -30,7 +30,8 @@ jobs:
             zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev \
             squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev \
             pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl \
-            bc libc6-dev-i386 libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python3
+            bc libc6-dev-i386 libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python3 \
+            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
 
       - name: Download toolchains
         run: |
@@ -59,12 +60,12 @@ jobs:
       - name: Build kernel
         run: |
           cd $GITHUB_WORKSPACE/kernel
+          export PATH=/usr/bin:$GITHUB_WORKSPACE/toolchains/clang/bin:$GITHUB_WORKSPACE/toolchains/gas/bin:$PATH
           export ARCH=${{ env.ARCH }}
           export CLANG_TRIPLE=${{ env.CLANG_TRIPLE }}
           export CROSS_COMPILE=${{ env.CROSS_COMPILE }}
           export CROSS_COMPILE_ARM32=${{ env.CROSS_COMPILE_ARM32 }}
           export CC=${{ env.CC }}
-          export PATH=$GITHUB_WORKSPACE/toolchains/clang/bin:$GITHUB_WORKSPACE/toolchains/gas/bin:$PATH
 
           make O=out ${{ env.DEVICE }}_defconfig
           make -j$(nproc --all) O=out \
